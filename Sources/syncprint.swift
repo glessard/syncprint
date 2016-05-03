@@ -25,7 +25,7 @@ private var silenceOutput: Int32 = 0
 ///
 ///  - parameter item: the item to be printed
 
-public func syncprint(item: Any)
+public func syncprint(_ item: Any)
 {
   let thread = NSThread.current().isMainThread ? "[main]" : "[back]"
 

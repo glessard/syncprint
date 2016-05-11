@@ -4,6 +4,7 @@
 //  Created by Guillaume Lessard on 2014-08-22.
 //  Copyright (c) 2014, 2015 Guillaume Lessard. All rights reserved.
 //
+//  https://github.com/glessard/syncprint
 //  https://gist.github.com/glessard/826241431dcea3655d1e
 //
 

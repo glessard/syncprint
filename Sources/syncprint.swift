@@ -11,8 +11,8 @@
 import Dispatch
 import Foundation.NSThread
 
-private let PrintQueue: dispatch_queue_t = dispatch_queue_create("com.tffenterprises.syncprint", DISPATCH_QUEUE_SERIAL)
-private let PrintGroup: dispatch_group_t = dispatch_group_create()
+private let printQueue = DispatchQueue(label: "com.tffenterprises.syncprint")
+private let printGroup = DispatchGroup()
 
 private var silenceOutput: Int32 = 0
 
@@ -28,9 +28,9 @@ private var silenceOutput: Int32 = 0
 
 public func syncprint(_ item: Any)
 {
-  let thread = NSThread.current().isMainThread ? "[main]" : "[back]"
+  let thread = Thread.current.isMainThread ? "[main]" : "[back]"
 
-  dispatch_group_async(PrintGroup, PrintQueue) {
+  printQueue.async(group: printGroup) {
     // Read silenceOutput atomically
     if OSAtomicAdd32(0, &silenceOutput) == 0
     {
@@ -44,11 +44,11 @@ public func syncprint(_ item: Any)
 public func syncprintwait()
 {
   // Wait at most 200ms for the last messages to print out.
-  let res = dispatch_group_wait(PrintGroup, dispatch_time(DISPATCH_TIME_NOW, 200_000_000))
-  if res != 0
+  let res = printGroup.wait(timeout: DispatchTime.now() + 0.2)
+  if res == .timedOut
   {
     OSAtomicIncrement32Barrier(&silenceOutput)
-    dispatch_group_notify(PrintGroup, PrintQueue) {
+    printGroup.notify(queue: printQueue) {
       print("Skipped output")
       OSAtomicDecrement32Barrier(&silenceOutput)
     }

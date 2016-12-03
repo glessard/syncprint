@@ -4,6 +4,23 @@ import Dispatch
 
 import syncprint
 
+#if os(Linux)
+import func Glibc.random
+#else
+import func Darwin.C.stdlib.arc4random
+#endif
+
+private func coinflip() -> Bool
+{
+#if os(Linux)
+  let i = random()
+#else
+  let i = arc4random()
+#endif
+
+  return (i&0x1) == 0
+}
+
 class syncprintTests: XCTestCase
 {
   static var allTests: [(String, (syncprintTests) -> () throws -> Void)] {
@@ -25,9 +42,16 @@ class syncprintTests: XCTestCase
     let q = DispatchQueue.global(qos: .userInitiated)
     let g = DispatchGroup()
 
-    for i in 0..<20
+    for i in 0..<100
     {
-      q.async(group: g) { syncprint(i) }
+      if coinflip()
+      {
+        q.async(group: g) { syncprint(i) }
+      }
+      else
+      {
+        syncprint(i)
+      }
     }
 
     g.wait()

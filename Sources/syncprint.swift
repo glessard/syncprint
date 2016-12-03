@@ -11,10 +11,12 @@
 import Dispatch
 import class Foundation.Thread
 
+import Atomics
+
 private let printQueue = DispatchQueue(label: "com.tffenterprises.syncprint")
 private let printGroup = DispatchGroup()
 
-private var silenceOutput: Int32 = 0
+private var silenceOutput = AtomicBool(false)
 
 ///  A wrapper for `Swift.print()` that executes all requests on a serial queue.
 ///  Useful for logging from multiple threads.
@@ -28,11 +30,16 @@ private var silenceOutput: Int32 = 0
 
 public func syncprint(_ item: Any)
 {
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
   let thread = Thread.current.isMainThread ? "[main]" : "[back]"
+#else
+  // Thread.current.isMainThread is not implemented in corelibs-foundation
+  let thread = "[]"
+#endif
 
   printQueue.async(group: printGroup) {
     // Read silenceOutput atomically
-    if OSAtomicAdd32(0, &silenceOutput) == 0
+    if silenceOutput.value == false
     {
       print(thread, item, separator: " ")
     }
@@ -47,10 +54,10 @@ public func syncprintwait()
   let res = printGroup.wait(timeout: DispatchTime.now() + 0.2)
   if res == .timedOut
   {
-    OSAtomicIncrement32Barrier(&silenceOutput)
+    silenceOutput.store(true)
     printGroup.notify(queue: printQueue) {
       print("Skipped output")
-      OSAtomicDecrement32Barrier(&silenceOutput)
+      silenceOutput.store(false)
     }
   }
 }

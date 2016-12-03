@@ -46,11 +46,11 @@ class syncprintTests: XCTestCase
     {
       if coinflip()
       {
-        q.async(group: g) { syncprint(i) }
+        q.async(group: g) { syncprint("bg \(i)") }
       }
       else
       {
-        syncprint(i)
+        syncprint("fg \(i)")
       }
     }
 

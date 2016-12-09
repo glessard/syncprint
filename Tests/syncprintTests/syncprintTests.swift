@@ -42,7 +42,7 @@ class syncprintTests: XCTestCase
     let q = DispatchQueue.global(qos: .userInitiated)
     let g = DispatchGroup()
 
-    for i in 0..<100
+    for i in 0..<1000
     {
       if coinflip()
       {

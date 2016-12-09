@@ -30,18 +30,11 @@ private var silenceOutput = AtomicBool(false)
 
 public func syncprint(_ item: Any)
 {
-#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-  let thread = Thread.current.isMainThread ? "[main]" : "[back]"
-#else
-  // Thread.current.isMainThread is not implemented in corelibs-foundation
-  let thread = "[]"
-#endif
-
   printQueue.async(group: printGroup) {
     // Read silenceOutput atomically
     if silenceOutput.value == false
     {
-      print(thread, item, separator: " ")
+      print(item)
     }
   }
 }

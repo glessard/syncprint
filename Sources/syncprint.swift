@@ -21,9 +21,6 @@ private var silenceOutput = AtomicBool(false)
 ///  A wrapper for `Swift.print()` that executes all requests on a serial queue.
 ///  Useful for logging from multiple threads.
 ///
-///  Writes a basic thread identifier (main or back), the textual representation
-///  of `item`, and a newline character onto the standard output.
-///
 ///  The textual representation is from the `String` initializer, `String(item)`
 ///
 ///  - parameter item: the item to be printed

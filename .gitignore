@@ -35,3 +35,5 @@ Carthage/Build
 .build
 Packages/
 Package.pins
+Package.resolved
+syncprint.xcodeproj

@@ -16,7 +16,7 @@ import Atomics
 private let printQueue = DispatchQueue(label: "com.tffenterprises.syncprint")
 private let printGroup = DispatchGroup()
 
-private var silenceOutput = AtomicBool(false)
+private var silenceOutput = AtomicBool()
 
 ///  A wrapper for `Swift.print()` that executes all requests on a serial queue.
 ///  Useful for logging from multiple threads.
